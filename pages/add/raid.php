@@ -27,27 +27,16 @@ if ( $disable_raids == "True" ) {
                         <div class="form-row align-items-center">
                             <div class="col-sm-12 my-1">
 
-                                <div class="input-group">
+                                <div class="input-group" id="gym_list_group">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text"><?php echo i8ln("Gym"); ?></div>
 				    </div>
 
-				    <select class="form-control selectpicker" data-toggle="dropdown" id="gym_id" name="gym_id" data-live-search="true" data-width="100px">
+				    <select class="form-control selectpicker with-ajax" data-toggle="dropdown" id="gym_id" name="gym_id" data-live-search="true" data-width="100px">
 
 				       <option value="ALL" data-tokens="ALL"><?php echo i8ln("TRACK FOR ALL GYMS"); ?></option>
-
-                                       <?php
- 				           $gymlist = get_gym_list();
-                                           foreach ($gymlist as $key => $gym) {
-                                              $arr = explode("_", $gym);
-                                              $gym_id = $arr[0];
-                                              $gym_name = str_replace("'", " ", $arr[1]);
-					      echo '<option data-tokens="'.$gym_id.'" value="'.$gym_id.'">'.substr($gym_name,0,45).'</option>';
-					   }
-
-	                               ?>
-                               
-                                    </select>
+                    
+                    </select>
                                 </div>
                             </div>
                         </div>
@@ -258,3 +247,47 @@ if ( $disable_raids == "True" ) {
                     </form>
 
 
+                <script>
+                    var options = {
+                        ajax: {
+                            url: 'gym_list.php',
+                            type: 'POST',
+                            dataType: 'json',
+                            data: {
+                                q: '{{{q}}}'
+                            }
+                        },
+                        minLength: 3,
+                        preprocessData: function (data) {
+                            var i, l = data.length, a, id, name, array = [];
+                            
+                            array.push($.extend(true, data[i], {
+                                text: '<?php echo i8ln("TRACK FOR ALL GYMS"); ?>',
+                                value: 'ALL',
+                                data: {
+                                    tokens: 'ALL'
+                                }
+                            }));
+
+                            if (l) {
+                                for (i = 0; i < l; i++) {
+                                    a = data[i].split('_')
+                                    id = a.shift()
+                                    name = a.join('_')
+                                    array.push($.extend(true, data[i], {
+                                        text: name,
+                                        value: id,
+                                        data: {
+                                            tokens: id
+                                        }
+                                    }));
+                                }
+                            }
+
+                            return array;
+                        }
+                    }
+
+                    $('.selectpicker').selectpicker().filter('.with-ajax').ajaxSelectPicker(options);
+                    $('select').trigger('change');
+                </script>

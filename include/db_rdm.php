@@ -30,12 +30,13 @@ function get_quest_mons() {
 
 }
 
-function get_gym_list() {
+function get_gym_list($name_like = '') {
 
    global $scan_conn;
-   $sql = "SELECT id, name FROM gym WHERE name IS NOT NULL ORDER BY name;";
-   $result = $scan_conn->query($sql);
 
+   $sql = "SELECT id, name FROM gym WHERE name IS NOT NULL AND name LIKE ?";
+   $result = $scan_conn->execute_query($sql, ["%{$name_like}%"]);
+   
    $gyms=array();
    while($row = $result->fetch_assoc()) {
       array_push($gyms, $row['id']."_".$row['name']);
