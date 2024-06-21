@@ -33,7 +33,7 @@ function get_gym_list($name_like = '') {
 
    global $scan_conn;
 
-   $sql = "SELECT gym_id, name FROM gymdetails WHERE name IS NOT NULL AND name LIKE ?";
+   $sql = "SELECT gym_id, name FROM gymdetails WHERE name IS NOT NULL AND name LIKE ? ORDER BY name";
    $result = $scan_conn->execute_query($sql, ["%{$name_like}%"]);
    
    $gyms=array();
